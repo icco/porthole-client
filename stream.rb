@@ -136,7 +136,7 @@ def main
 
   stream_response = build_stream client, youtube
   puts "Stream ID: #{stream_response["id"]}"
-  puts "Stream URL: #{stream_response["cdn"]["ingestionAddress"]}/#{stream_response["cdn"]["streamName"]}"
+  puts "Stream URL: #{stream_response["cdn"]["ingestionInfo"]["ingestionAddress"]}/#{stream_response["cdn"]["ingestionInfo"]["streamName"]}"
 end
 
 main
