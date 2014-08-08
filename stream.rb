@@ -90,6 +90,18 @@ def build_event client, youtube
   end
 end
 
+# Example response: {"kind"=>"youtube#liveStream",
+# "etag"=>"\"gMjDJfS6nsym0T-NKCXALC_u_rM/H7Qp4YfqRZKgl0KjCz8sKhebKxg\"",
+# "id"=>"h4CJdC3mXyimvshLxNuFDg1407508700253501",
+# "snippet"=>{"publishedAt"=>"2014-08-08T14:38:20.000Z",
+# "channelId"=>"UCh4CJdC3mXyimvshLxNuFDg",
+# "title"=>"Nat Test Broadcast Stream",
+# "description"=>""},
+# "cdn"=>{"format"=>"1080p",
+# "ingestionType"=>"rtmp",
+# "ingestionInfo"=>{"streamName"=>"nat.tgbd-jpm5-rehs-6q70",
+# "ingestionAddress"=>"rtmp://a.rtmp.youtube.com/live2",
+# "backupIngestionAddress"=>"rtmp://b.rtmp.youtube.com/live2?backup=1"}}}
 def build_stream client, youtube
   params = {
     :part => "snippet,cdn",
@@ -107,7 +119,6 @@ def build_stream client, youtube
   puts "======== INSERT ATTEMPT"
   response, code = request(client, youtube.live_streams.insert, params, body)
   if code == 200
-    p response
     return response
   else
     p code
