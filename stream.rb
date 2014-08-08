@@ -45,9 +45,27 @@ def request(client, api_method, parameters = {}, body_object = nil)
   return [result.body.nil? || result.body.empty? ? nil : Oj.load(result.body), result.status]
 end
 
-def main
-  client, youtube = build_client
-  puts "Valid youtube requests: #{youtube.singleton_methods.inspect}"
+# Example response: {"kind"=>"youtube#liveBroadcast",
+# "etag"=>"\"gMjDJfS6nsym0T-NKCXALC_u_rM/8HKEGQDcNVgV0oNpG7Jl4TXPDKk\"",
+# "id"=>"nkSj0Aw6yrU",
+# "snippet"=>{"publishedAt"=>"2014-08-08T14:14:43.000Z",
+# "channelId"=>"UCh4CJdC3mXyimvshLxNuFDg",
+# "title"=>"Nat Test Broadcast",
+# "description"=>"",
+# "thumbnails"=>{"default"=>{"url"=>"https://yt3.ggpht.com/-gmxpk_n-oJE/AAAAAAAAAAI/AAAAAAAAAAA/ZxZoWM_nzdA/s120-c-k-no/photo.jpg",
+# "width"=>120,
+# "height"=>90},
+# "medium"=>{"url"=>"https://yt3.ggpht.com/-gmxpk_n-oJE/AAAAAAAAAAI/AAAAAAAAAAA/ZxZoWM_nzdA/s480-c-k-no/photo.jpg",
+# "width"=>320,
+# "height"=>180},
+# "high"=>{"url"=>"https://yt3.ggpht.com/-gmxpk_n-oJE/AAAAAAAAAAI/AAAAAAAAAAA/ZxZoWM_nzdA/s480-c-k-no/photo.jpg",
+# "width"=>480,
+# "height"=>360}},
+# "scheduledStartTime"=>"2014-08-08T15:14:43.000Z"},
+# "status"=>{"lifeCycleStatus"=>"created",
+# "privacyStatus"=>"unlisted",
+# "recordingStatus"=>"notRecording"}}
+def build_event client, youtube
   params = {
     :part => "snippet,status",
   }
@@ -62,7 +80,52 @@ def main
   }
 
   puts "======== INSERT ATTEMPT"
-  p request(client, youtube.live_broadcasts.insert, params, body)
+  response, code = request(client, youtube.live_broadcasts.insert, params, body)
+  if code == 200
+    return response
+  else
+    p code
+    p response
+    return nil
+  end
+end
+
+def build_stream client, youtube
+  params = {
+    :part => "snippet,cdn",
+  }
+  body = {
+    snippet: {
+      title: "Nat Test Broadcast Stream",
+    },
+    cdn: {
+      format: "1080p",
+      ingestionType: "rtmp",
+    }
+  }
+
+  puts "======== INSERT ATTEMPT"
+  response, code = request(client, youtube.live_streams.insert, params, body)
+  if code == 200
+    p response
+    return response
+  else
+    p code
+    p response
+    return nil
+  end
+end
+
+def main
+  client, youtube = build_client
+  puts "Valid youtube requests: #{youtube.singleton_methods.inspect}"
+
+  broadcast_response = build_event client, youtube
+  puts "Broadcast ID: #{broadcast_response["id"]}"
+
+  stream_response = build_stream client, youtube
+  puts "Stream ID: #{stream_response["id"]}"
+  puts "Stream URL: #{stream_response["cdn"]["ingestionAddress"]}/#{stream_response["cdn"]["streamName"]}"
 end
 
 main
