@@ -53,7 +53,7 @@ def main
   client, youtube = build_client
   puts "Valid youtube requests: #{youtube.singleton_methods.inspect}"
   params = {
-    :part => ""
+    :part => "snippet,status",
   }
 
   puts "======== INSERT ATTEMPT"
