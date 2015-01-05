@@ -13,7 +13,7 @@ YOUTUBE_API_VERSION = "v3"
 
 def build_client
   google_api_scopes = [YOUTUBE_READ_WRITE_SCOPE]
-  google_secrets = Google::APIClient::ClientSecrets.load(File.expand_path("~/Dropbox/ThePortholeAgency.json"))
+  google_secrets = Google::APIClient::ClientSecrets.load(File.expand_path("~/ThePortholeAgency.json"))
 
   api_client_options = {
     :application_name => "porthole",
@@ -135,8 +135,11 @@ def main
   puts "Broadcast ID: #{broadcast_response["id"]}"
 
   stream_response = build_stream client, youtube
+  url = "#{stream_response["cdn"]["ingestionInfo"]["ingestionAddress"]}/#{stream_response["cdn"]["ingestionInfo"]["streamName"]}"
   puts "Stream ID: #{stream_response["id"]}"
-  puts "Stream URL: #{stream_response["cdn"]["ingestionInfo"]["ingestionAddress"]}/#{stream_response["cdn"]["ingestionInfo"]["streamName"]}"
+  puts "Stream URL: #{url}"
+  puts "Command: sudo mencoder tv:// -tv device=/dev/video0:fps=8:width=1920:height=1080 -nosound -lavcopts vcodec=flv:vbitrate=4500:keyint=40 -ovc lavc -o #{url}"
+  puts "https://www.youtube.com/my_live_events"
 end
 
 main
